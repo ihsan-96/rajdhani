@@ -3,6 +3,7 @@ Module to interact with the database.
 """
 
 from . import placeholders
+from . import constants
 from . import db_ops
 
 db_ops.ensure_db()
@@ -22,6 +23,7 @@ def search_stations(q):
     response = [{"name": name, "code": code} for name, code in stations[1]]
     return response
 
+# date info is not there in db.
 def search_trains(
         from_station_code,
         to_station_code,
@@ -35,7 +37,11 @@ def search_trains(
 
     This is used to get show the trains on the search results page.
     """
-    query = f"SELECT * from train WHERE from_station_code == '{from_station_code}' AND to_station_code == '{to_station_code}'"
+    query = f"""SELECT * from train
+                WHERE
+                from_station_code == '{from_station_code}'
+                AND to_station_code == '{to_station_code}'
+                AND {constants.TICKET_CLASSES[ticket_class]} == 1"""
     trains = db_ops.exec_query(query)
     response = []
     for train in trains[1]:
