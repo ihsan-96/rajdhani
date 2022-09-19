@@ -102,10 +102,12 @@ def get_schedule(train_number):
 def book_ticket(train_number, ticket_class, departure_date, passenger_name, passenger_email):
     """Book a ticket for passenger
     """
-    # TODO: make a db query and insert a new booking
-    # into the booking table
+    query = "INSERT INTO booking (train_number, ticket_class, date, passenger_name, passenger_email) VALUES(?, ?, ?, ?, ?)"
+    params = (train_number, ticket_class, departure_date, passenger_name, passenger_email)
+    booking_id = db_ops.exec_insert_query(query, params, True)
 
-    return placeholders.TRIPS[0]
+    return booking_id
+    # return placeholders.TRIPS[0]
 
 def get_trips(email):
     """Returns the bookings made by the user

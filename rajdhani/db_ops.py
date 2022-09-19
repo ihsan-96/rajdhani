@@ -44,3 +44,15 @@ def exec_query(q, commit=False):
         conn.close()
 
     return columns, rows
+
+def exec_insert_query(q, params, commit=False):
+    conn = get_conn()
+    curs = conn.cursor()
+    try:
+        curs.execute(q, params)
+        if commit:
+                conn.commit()
+    finally:
+        conn.close()
+
+    return curs.lastrowid
