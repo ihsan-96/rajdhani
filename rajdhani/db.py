@@ -21,7 +21,7 @@ def search_stations(q):
     query = f"""SELECT name, code FROM
                     (SELECT name, code, LOWER(code) || '-' || LOWER(name) as search_index FROM station)
                 WHERE search_index LIKE '%{q}%'
-                ORDER BY (CASE WHEN search_index = '{q}' THEN 1 ELSE 2 END), search_index
+                ORDER BY (CASE WHEN code == '{q.upper()}' THEN 1 ELSE 2 END)
                 LIMIT 10"""
     stations = db_ops.exec_query(query)
     response = [{"name": name, "code": code} for name, code in stations[1]]
