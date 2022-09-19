@@ -17,8 +17,12 @@ def search_stations(q):
     The q is the few characters of the station name or
     code entered by the user.
     """
-
-    query = f"SELECT name, code FROM (SELECT name, code, LOWER(code) || LOWER(name) as search_index FROM station) WHERE search_index LIKE '%{q.lower()}%' limit 10"
+    q = q.lower()
+    query = f"""SELECT name, code FROM
+                    (SELECT name, code, LOWER(code) || '-' || LOWER(name) as search_index FROM station)
+                WHERE search_index LIKE '%{q}%'
+                ORDER BY (CASE WHEN search_index = '{q}' THEN 1 ELSE 2 END), search_index
+                LIMIT 10"""
     stations = db_ops.exec_query(query)
     response = [{"name": name, "code": code} for name, code in stations[1]]
     return response
