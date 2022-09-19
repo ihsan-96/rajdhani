@@ -99,11 +99,17 @@ def get_schedule(train_number):
         response.append(station)
     return response
 
+def get_from_and_to_of_train(number):
+    query = f"SELECT from_station_code, to_station_code FROM train WHERE number = '{number}'"
+    _, train_info = db_ops.exec_query(query)
+    return train_info[0]
+
 def book_ticket(train_number, ticket_class, departure_date, passenger_name, passenger_email):
     """Book a ticket for passenger
     """
-    query = "INSERT INTO booking (train_number, ticket_class, date, passenger_name, passenger_email) VALUES(?, ?, ?, ?, ?)"
-    params = (train_number, ticket_class, departure_date, passenger_name, passenger_email)
+    from_station_code, to_station_code = get_from_and_to_of_train(train_number)
+    query = "INSERT INTO booking (train_number, ticket_class, date, passenger_name, passenger_email, from_station_code, to_station_code) VALUES(?, ?, ?, ?, ?, ?, ?)"
+    params = (train_number, ticket_class, departure_date, passenger_name, passenger_email, from_station_code, to_station_code)
     booking_id = db_ops.exec_insert_query(query, params, True)
 
     return booking_id
