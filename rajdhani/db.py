@@ -18,8 +18,8 @@ def search_stations(q):
     """
 
     query = f"SELECT name, code FROM (SELECT name, code, LOWER(name) || LOWER(code) as search_index FROM station) WHERE search_index LIKE '%{q.lower()}%' limit 10"
-    result = db_ops.exec_query(query)
-    response = [{"name": name, "code": code} for name, code in result[1]]
+    stations = db_ops.exec_query(query)
+    response = [{"name": name, "code": code} for name, code in stations[1]]
     return response
 
 def search_trains(
@@ -35,10 +35,13 @@ def search_trains(
 
     This is used to get show the trains on the search results page.
     """
-    # TODO: make a db query to get the matching trains
-    # and replace the following dummy implementation
+    query = f"SELECT * from train WHERE from_station_code == '{from_station_code}' AND to_station_code == '{to_station_code}'"
+    trains = db_ops.exec_query(query)
+    response = []
+    for train in trains[1]:
+        response.append({trains[0][i]: train[i] for i in range(12) if not i in [2, 3]})
 
-    return placeholders.SEARCH_TRAINS
+    return response
 
 def get_schedule(train_number):
     """Returns the schedule of a train.
