@@ -111,9 +111,14 @@ def book_ticket(train_number, ticket_class, departure_date, passenger_name, pass
     query = "INSERT INTO booking (train_number, ticket_class, date, passenger_name, passenger_email, from_station_code, to_station_code) VALUES(?, ?, ?, ?, ?, ?, ?)"
     params = (train_number, ticket_class, departure_date, passenger_name, passenger_email, from_station_code, to_station_code)
     booking_id = db_ops.exec_insert_query(query, params, True)
-
-    return booking_id
+    booking = get_trip(booking_id)
+    return booking
     # return placeholders.TRIPS[0]
+
+def get_trip(booking_id):
+    query = f"SELECT * FROM booking WHERE id = {booking_id}"
+    booking = db_ops.exec_query(query)
+    return {booking[0][i]: booking[1][0][i] for i in range(8)}
 
 def get_trips(email):
     """Returns the bookings made by the user
