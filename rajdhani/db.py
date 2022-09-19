@@ -63,7 +63,7 @@ def search_trains(
     response = []
     for train in trains[1]:
         is_valid = True
-        train = {trains[0][i]: train[i] for i in range(12) if not i in [2, 3]}
+        train = {trains[0][i]: train[i] for i in range(12) if i not in [2, 3]}
 
         if len(departure_time):
             print(train)
@@ -84,7 +84,13 @@ def search_trains(
 def get_schedule(train_number):
     """Returns the schedule of a train.
     """
-    return placeholders.SCHEDULE
+    query = f"SELECT * FROM schedule WHERE train_number == '{train_number}' AND day != ''"
+    schedule = db_ops.exec_query(query)
+    response = []
+    for station in schedule[1]:
+        station = {schedule[0][i]: station[i] for i in range(7) if i not in [2, 3]}
+        response.append(station)
+    return response
 
 def book_ticket(train_number, ticket_class, departure_date, passenger_name, passenger_email):
     """Book a ticket for passenger
