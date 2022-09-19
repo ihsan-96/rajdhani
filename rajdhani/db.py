@@ -18,7 +18,7 @@ def search_stations(q):
     code entered by the user.
     """
 
-    query = f"SELECT name, code FROM (SELECT name, code, LOWER(name) || LOWER(code) as search_index FROM station) WHERE search_index LIKE '%{q.lower()}%' limit 10"
+    query = f"SELECT name, code FROM (SELECT name, code, LOWER(code) || LOWER(name) as search_index FROM station) WHERE search_index LIKE '%{q.lower()}%' limit 10"
     stations = db_ops.exec_query(query)
     response = [{"name": name, "code": code} for name, code in stations[1]]
     return response
