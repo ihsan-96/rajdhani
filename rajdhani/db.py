@@ -16,9 +16,11 @@ def search_stations(q):
     The q is the few characters of the station name or
     code entered by the user.
     """
-    # TODO: make a db query to get the matching stations
-    # and replace the following dummy implementation
-    return placeholders.AUTOCOMPLETE_STATIONS
+
+    query = f"SELECT name, code FROM (SELECT name, code, LOWER(name) || LOWER(code) as search_index FROM station) WHERE search_index LIKE '%{q.lower()}%' limit 10"
+    result = db_ops.exec_query(query)
+    response = [{"name": name, "code": code} for name, code in result[1]]
+    return response
 
 def search_trains(
         from_station_code,
