@@ -27,6 +27,16 @@ def search_stations(q):
     response = [{"name": name, "code": code} for name, code in stations[1]]
     return response
 
+
+def get_time_slot(time_string):
+    """Returns the time slot of a time"""
+    time = [int(n) for n in time_string.split(":")]
+    time_in_seconds = time[0] * 60 * 60 + time[1] * 60 + time[2]
+    for slot in constants.TIME_SLOTS:
+        if (time_in_seconds < int(slot)):
+            return constants.TIME_SLOTS[slot]
+    return "Invalid Slot"
+
 # date info is not there in db.
 def search_trains(
         from_station_code,
@@ -44,12 +54,30 @@ def search_trains(
     query = f"""SELECT * from train
                 WHERE
                 from_station_code == '{from_station_code}'
-                AND to_station_code == '{to_station_code}'
-                AND {constants.TICKET_CLASSES[ticket_class]} == 1"""
+                AND to_station_code == '{to_station_code}'"""
+
+    if ticket_class:
+        query += f"AND {constants.TICKET_CLASSES[ticket_class]} == 1"
+
     trains = db_ops.exec_query(query)
     response = []
     for train in trains[1]:
-        response.append({trains[0][i]: train[i] for i in range(12) if not i in [2, 3]})
+        is_valid = True
+        train = {trains[0][i]: train[i] for i in range(12) if not i in [2, 3]}
+
+        if len(departure_time):
+            print(train)
+            departure_slot = get_time_slot(train["departure"])
+            if departure_slot not in departure_time:
+                is_valid = False
+
+        if len(arrival_time):
+            arrival_slot = get_time_slot(train["arrival"])
+            if arrival_slot not in arrival_time:
+                is_valid = False
+
+        if is_valid:
+            response.append(train)
 
     return response
 

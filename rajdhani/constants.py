@@ -9,3 +9,11 @@ TICKET_CLASSES = {
     "FC": "first_class",
     "CC": "chair_car"
 }
+
+TIME_SLOTS = {
+    "28800": "slot1",
+    "43200": "slot2",
+    "57600": "slot3",
+    "72000": "slot4",
+    "86400": "slot5",
+}
