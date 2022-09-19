@@ -18,10 +18,17 @@ def search_stations(q):
     code entered by the user.
     """
     q = q.lower()
+    # query = f"""SELECT name, code FROM
+    #                 (SELECT name, code, LOWER(code) || '-' || LOWER(name) as search_index FROM station)
+    #             WHERE search_index LIKE '%{q}%'
+    #             ORDER BY (CASE WHEN code == '{q.upper()}' THEN 1 ELSE 2 END)
+    #             LIMIT 10"""
     query = f"""SELECT name, code FROM
-                    (SELECT name, code, LOWER(code) || '-' || LOWER(name) as search_index FROM station)
-                WHERE search_index LIKE '%{q}%'
-                ORDER BY (CASE WHEN code == '{q.upper()}' THEN 1 ELSE 2 END)
+                    (
+                        SELECT name, code FROM station WHERE LOWER(code) LIKE '{q}%'
+                        UNION
+                        SELECT name, code FROM station WHERE LOWER(name) LIKE '%{q}%'
+                    )
                 LIMIT 10"""
     stations = db_ops.exec_query(query)
     response = [{"name": name, "code": code} for name, code in stations[1]]
