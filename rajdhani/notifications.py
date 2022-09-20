@@ -13,7 +13,7 @@ def send_booking_confirmation_email(booking):
     """
     email = EmailMessage()
     email['Subject'] = 'Train Ticket Booking Successful!'
-    email['From'] = 'Rajdhani Travel <rajdhani@example.com>'
+    email['From'] = 'Ameen Ahsan <ameen@rajdhani.pipal.in>'
     email['To'] = f'{booking["passenger_name"]} <{booking["passenger_email"]}>'
     email.set_content(f"""Hello {booking["passenger_name"]},
     Your ticket booking is successful
