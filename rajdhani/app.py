@@ -137,7 +137,10 @@ def book_ticket_page():
                        departure_date=request.form.get("date"),
                        passenger_name=request.form.get("passenger_name"),
                        passenger_email=request.form.get("passenger_email"))
-        notifications.send_booking_confirmation_email(booking)
+        try:
+            notifications.send_booking_confirmation_email(booking)
+        except Exception as ex:
+            print("Email failed, ", str(ex))
 
         return redirect("/thank-you")
     else:
