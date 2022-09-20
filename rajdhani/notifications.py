@@ -24,7 +24,6 @@ def send_booking_confirmation_email(booking):
 
     smtp = smtplib.SMTP(f'{config.smtp_hostname[0]}:{config.smtp_port[0]}')
     try:
-        res = smtp.send_message(email)
-        print(res)
+        smtp.send_message(email)
     finally:
         smtp.quit()
