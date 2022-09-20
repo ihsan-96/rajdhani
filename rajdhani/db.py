@@ -73,7 +73,6 @@ def search_trains(
         train = {trains[0][i]: train[i] for i in range(12) if i not in [2, 3]}
 
         if len(departure_time):
-            print(train)
             departure_slot = get_time_slot(train["departure"])
             if departure_slot not in departure_time:
                 is_valid = False
@@ -120,10 +119,34 @@ def get_trip(booking_id):
     booking = db_ops.exec_query(query)
     return {booking[0][i]: booking[1][0][i] for i in range(8)}
 
+def get_train_name(train_number):
+    query = f"SELECT name FROM train WHERE number = '{train_number}'"
+    name = db_ops.exec_query(query)
+    return name[1][0][0]
+
+def get_station_name(code):
+    query = f"SELECT name FROM station WHERE code = '{code}'"
+    name = db_ops.exec_query(query)
+    return name[1][0][0]
+
+def get_from_to_station_names(from_station_code, to_station_code):
+    return get_station_name(from_station_code), get_station_name(to_station_code)
+
 def get_trips(email):
     """Returns the bookings made by the user
     """
-    # TODO: make a db query and get the bookings
-    # made by user with `email`
+    query = f"SELECT * FROM booking WHERE passenger_email = '{email}'"
+    trips = db_ops.exec_query(query)
+    response = []
 
-    return placeholders.TRIPS
+    for trip in trips[1]:
+        trip_details = {trips[0][i]: trip[i] for i in range(8) if i != 0}
+        from_station_name, to_station_name = get_from_to_station_names(trip_details["from_station_code"], trip_details["to_station_code"])
+        train_name = get_train_name(trip_details["train_number"])
+        trip_details["train_name"] = train_name
+        trip_details["from_station_name"] = from_station_name
+        trip_details["to_station_name"] = to_station_name
+        response.append(trip_details)
+
+    return response
+    # return placeholders.TRIPS
